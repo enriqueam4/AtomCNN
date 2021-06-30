@@ -6,7 +6,6 @@ from tkinter import filedialog
 from tkinter import *
 import imutils
 from random import randint
-from skimage import exposure
 
 
 def main():
@@ -19,7 +18,8 @@ def main():
         os.chdir(directory)
 
     gt_path = r'C:\Users\emejia\OneDrive - CUNY\Enrique\Simulations\Jun17_Sims\gt.tif'
-    gt = loadgt(gt_path)
+    gt = load_image(gt_path)
+    gt = gt/gt.max()
 
     files = os.listdir(directory)
     n_files = len(files)
@@ -29,51 +29,20 @@ def main():
     Y_Train = []
     test_batches = 340
     train_batches = 928
-    imagesize = 256
+    image_size = 256
     for j in range(test_batches):
         print(str(j)+" of "+str(test_batches))
-
         k = np.random.randint(0, n_files - 1)
-        img = cv2.imread(os.path.join(directory, files[k]), 0)  # 0 to read images grayscale
-        np_img = np.asarray(img, dtype='uint8')
-
-        img_copy = np.empty_like(np_img)
-        img_copy[:] = np_img
-        gt_copy = np.empty_like(gt)
-        gt_copy[:] = gt
-
-        img_copy, gt_copy = rand_rotate(img_copy, gt_copy)
-        img_copy, gt_copy = rand_crop(img_copy, gt_copy, 10)
-
-        rand_row = np.random.randint(0, (img_copy.shape[0] - imagesize))
-        rand_col = np.random.randint(0, (img_copy.shape[1] - imagesize))
-
-        cropped = img_copy[rand_row:rand_row + imagesize, rand_col:rand_col + imagesize]
-        gt_crop = gt_copy[rand_row:rand_row + imagesize, rand_col:rand_col + imagesize]
-
+        img = load_image(os.path.join(directory, files[k]), 0)
+        cropped, gt_crop = prep_pair(img, gt, image_size)
         X_Test.append(cropped)
         Y_Test.append(gt_crop)
 
     for j in range(train_batches):
         print(str(j) + " of " + str(train_batches))
-
         k = np.random.randint(0, n_files - 1)
-        img = cv2.imread(os.path.join(directory, files[k]), 0)  # 0 to read images grayscale
-        np_img = np.asarray(img, dtype='uint8')
-
-        img_copy = np.empty_like(np_img)
-        img_copy[:] = np_img
-        gt_copy = np.empty_like(gt)
-        gt_copy[:] = gt
-
-        img_copy, gt_copy = rand_rotate(img_copy, gt_copy)
-        img_copy, gt_copy = rand_crop(img_copy, gt_copy, 10)
-
-        rand_row = np.random.randint(0, (img_copy.shape[0] - imagesize))
-        rand_col = np.random.randint(0, (img_copy.shape[1] - imagesize))
-        cropped = img_copy[rand_row:rand_row + imagesize, rand_col:rand_col + imagesize]
-        gt_crop = gt_copy[rand_row:rand_row + imagesize, rand_col:rand_col + imagesize]
-
+        img = load_image(os.path.join(directory, files[k]), 0)
+        cropped, gt_crop = prep_pair(img, gt, image_size)
         X_Train.append(cropped)
         Y_Train.append(gt_crop)
 
@@ -105,12 +74,24 @@ def rand_rotate(image, gt):
     return imutils.rotate(image, angle=rand_angle), imutils.rotate(gt, angle=rand_angle)
 
 
-def loadgt(gt_path):
+def load_image(gt_path):
     if os.path.splitext(gt_path)[1] == ".tif":
         gt_im = cv2.imread(gt_path, 0)
-        gt = np.asarray(gt_im).astype("uint8")
-        return gt / gt.max()
+        return np.asarray(gt_im).astype("uint8")
 
+
+def prep_pair(image, gt, image_size):
+    img_copy = np.empty_like(image)
+    img_copy[:] = image
+    gt_copy = np.empty_like(gt)
+    gt_copy[:] = gt
+    img_copy, gt_copy = rand_rotate(img_copy, gt_copy)
+    img_copy, gt_copy = rand_crop(img_copy, gt_copy, 10)
+    rand_row = np.random.randint(0, (img_copy.shape[0] - image_size))
+    rand_col = np.random.randint(0, (img_copy.shape[1] - image_size))
+    cropped = img_copy[rand_row:rand_row + image_size, rand_col:rand_col + image_size]
+    gt_crop = gt_copy[rand_row:rand_row + image_size, rand_col:rand_col + image_size]
+    return cropped, gt_crop
 
 if __name__ == '__main__':
     main()
