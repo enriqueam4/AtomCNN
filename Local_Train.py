@@ -1,18 +1,9 @@
 import torch
 import netclasses
 import torch.optim as optim
-
-
-import matplotlib.pyplot as plt
+import os
 from tkinter import *
 from tkinter import filedialog
-import numpy as np
-import h5py
-import json
-from sklearn.utils import shuffle
-import cv2
-from scipy import ndimage
-import matplotlib.pyplot as plt
 
 
 def main():
@@ -25,7 +16,14 @@ def main():
         print('Please make sure you selected GPU as a hardware accelerator in Runtime --> Change runtime type')
         return
 
-    hf_file = r'C:\Users\emejia\OneDrive - CUNY\Enrique\Simulations\Jun17_Sims\exitwave.h5'
+    root = Tk()
+    root.withdraw()
+    hf_file = filedialog.askopenfilename(title="Select h5 file")
+    if hf_file == "":
+        return 0
+    else:
+        os.chdir(hf_file)
+
     batch_size = 30
     gen = netclasses.generate_batches(hf_file, batch_size)
     train_ims, gt = next(gen.batch(28))

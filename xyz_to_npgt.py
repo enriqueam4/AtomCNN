@@ -16,7 +16,7 @@ def main():
     if extension == ".xyz":
         species_list = {'B', 'N', 'C'}
         data = xyz_reader(xyz_filename)
-        comparison_file = r'C:\Users\enriq\Desktop\Noisy Ims GT\8_bit_groundTruth0.tif'  # filedialog.askopenfilename(title="Select image file for comparison")
+        #comparison_file = r'C:\Users\enriq\Desktop\Noisy Ims GT\8_bit_groundTruth0.tif'  # filedialog.askopenfilename(title="Select image file for comparison")
 
         c_file = cv2.imread(comparison_file)
         c_file = np.asarray(c_file)
@@ -85,8 +85,6 @@ def main():
 
         # cv2.imwrite(name+"_written.png", gt)
         # cv2.imwrite(name+"_binarized.png", c_file)
-
-
 
 
 def find_nearest(array, value):

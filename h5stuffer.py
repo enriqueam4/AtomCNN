@@ -19,10 +19,7 @@ def main():
         os.chdir(directory)
 
     gt_path = r'C:\Users\emejia\OneDrive - CUNY\Enrique\Simulations\Jun17_Sims\gt.tif'
-    gt_im = cv2.imread(gt_path, 0)
-    gt = np.asarray(gt_im).astype("uint8")
-    gt = gt / gt.max()
-    print(gt)
+    gt = loadgt(gt_path)
 
     files = os.listdir(directory)
     n_files = len(files)
@@ -35,6 +32,7 @@ def main():
     imagesize = 256
     for j in range(test_batches):
         print(str(j)+" of "+str(test_batches))
+
         k = np.random.randint(0, n_files - 1)
         img = cv2.imread(os.path.join(directory, files[k]), 0)  # 0 to read images grayscale
         np_img = np.asarray(img, dtype='uint8')
@@ -52,15 +50,13 @@ def main():
 
         cropped = img_copy[rand_row:rand_row + imagesize, rand_col:rand_col + imagesize]
         gt_crop = gt_copy[rand_row:rand_row + imagesize, rand_col:rand_col + imagesize]
-        # cv2.imshow("cropped", cropped)
-        # cv2.imshow("gt_crop", gt_crop)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+
         X_Test.append(cropped)
         Y_Test.append(gt_crop)
 
     for j in range(train_batches):
         print(str(j) + " of " + str(train_batches))
+
         k = np.random.randint(0, n_files - 1)
         img = cv2.imread(os.path.join(directory, files[k]), 0)  # 0 to read images grayscale
         np_img = np.asarray(img, dtype='uint8')
@@ -107,6 +103,13 @@ def rand_crop(image, gt, scale):
 def rand_rotate(image, gt):
     rand_angle = randint(-30, 30)
     return imutils.rotate(image, angle=rand_angle), imutils.rotate(gt, angle=rand_angle)
+
+
+def loadgt(gt_path):
+    if os.path.splitext(gt_path)[1] == ".tif":
+        gt_im = cv2.imread(gt_path, 0)
+        gt = np.asarray(gt_im).astype("uint8")
+        return gt / gt.max()
 
 
 if __name__ == '__main__':

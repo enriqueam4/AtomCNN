@@ -7,6 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from sklearn.utils import shuffle
 
+
 class conv2dblock(nn.Module):
     def __init__(self, input_channels, output_channels, kernel_size=3, stride=1, padding=1, use_batchnorm=False,
                  lrelu_a=0.01, dropout_=0):
@@ -304,7 +305,6 @@ class generate_batches_from_im:
 
 
 def train(epochs, hf_file, batch_size, model, optimizer, criterion=nn.BCELoss()):
-
     train_losses, test_losses = [], []
     gen = generate_batches(hf_file, batch_size)
     steps = gen.steps()
@@ -347,7 +347,7 @@ def train(epochs, hf_file, batch_size, model, optimizer, criterion=nn.BCELoss())
                     print("\rValidation mode", 4 * ".",
                           "Batch {}/{}".format(i + 1, len(steps_val)),
                           end="")
-                    # Same as in training mode but without backprop
+                    # Same as in training mode but without backpropagation
                     images, labels = next(gen.batch(s, mode='val'))
                     images, labels = images.cuda(), labels.cuda()
                     prob = model.forward(images)
@@ -368,3 +368,5 @@ def train(epochs, hf_file, batch_size, model, optimizer, criterion=nn.BCELoss())
     # save the final weights
     torch.save(model.state_dict(), hf_file.split('.')[0] + '-1-final_weights.pt')
     gen.close_()
+
+# Live, Laugh, Love
