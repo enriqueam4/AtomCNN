@@ -9,7 +9,7 @@ import numpy as np
 from PIL import Image
 from matplotlib import cm
 
-ff
+
 def main():
     try:
         device = torch.cuda.get_device_name(0)

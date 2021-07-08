@@ -11,12 +11,13 @@ from random import randint
 def main():
     root = Tk()
     root.withdraw()
+    # directory is the image directory of all the images
     directory = filedialog.askdirectory(title="Select simulated image folder")
     if directory == "":
         return 0
     else:
         os.chdir(directory)
-
+    # change gt path to the location of some tif image corresponding to the exit wave of the structure
     gt_path = r'C:\Users\emejia\OneDrive - CUNY\Enrique\Simulations\Jun17_Sims\gt.tif'
     gt = load_image(gt_path)
     gt = gt/gt.max()
