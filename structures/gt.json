@@ -1,0 +1,72 @@
+{
+    "ctem": {
+        "area": {
+            "x": {
+                "finish": 61.55447769165039,
+                "start": -1.256229043006897
+            },
+            "y": {
+                "finish": 109.51658630371094,
+                "start": 58.022029876708984
+            }
+        },
+        "ccd": "Perfect",
+        "cropped padding": false,
+        "simulate image": true
+    },
+    "default padding": {
+        "xy": {
+            "units": "Å",
+            "val": 8.0
+        },
+        "z": {
+            "units": "Å",
+            "val": 3.0
+        }
+    },
+    "double precision": false,
+    "filename": "C:/Users/emejia/Desktop/AtomCNN/structures/50x50x1_V_B_and_C_N_5_each_draft2.xyz",
+    "full 3d": {
+        "state": false
+    },
+    "intermediate output": {
+        "enabled": false,
+        "slice interval": 0
+    },
+    "maintain areas": false,
+    "microscope": {
+        "beam tilt": {
+            "azimuth": {
+                "units": "°",
+                "val": 0.0
+            },
+            "inclination": {
+                "units": "mrad",
+                "val": 0.0
+            }
+        },
+        "objective aperture": {
+            "semi-angle": 100.0,
+            "smoothing": 0.0,
+            "units": "mrad"
+        },
+        "voltage": {
+            "units": "kV",
+            "val": 200.0
+        }
+    },
+    "mode": {
+        "id": 1,
+        "name": "CTEM"
+    },
+    "potentials": "kirkland",
+    "resolution": 1024,
+    "slice offset": {
+        "units": "Å",
+        "val": 0.0
+    },
+    "slice thickness": {
+        "units": "Å",
+        "val": 1.0
+    }
+}

@@ -2,8 +2,8 @@ import torch
 import netclasses
 import torch.optim as optim
 import os
-from tkinter import *
-from tkinter import filedialog
+import sys
+
 
 def main():
     try:
@@ -15,13 +15,8 @@ def main():
         print('Please make sure you selected GPU as a hardware accelerator in Runtime --> Change runtime type')
         return
 
-    root = Tk()
-    root.withdraw()
-    hf_file = filedialog.askopenfilename(title="Select h5 file")
-    if hf_file == "":
-        return 0
-    else:
-        os.chdir(hf_file)
+    hf_file = sys.argv[1]
+    epochs = int(sys.argv[2])
 
     batch_size = 30
     gen = netclasses.generate_batches(hf_file, batch_size)
@@ -31,7 +26,7 @@ def main():
     model = netclasses.atomsegnet()
     model.cuda()
     optimizer = optim.Adam(model.parameters(), lr=5e-4)
-    netclasses.train(epochs=300, hf_file=hf_file, model=model, optimizer=optimizer, batch_size=batch_size)
+    netclasses.train(epochs=epochs, hf_file=hf_file, model=model, optimizer=optimizer, batch_size=batch_size)
 
 
 if __name__ == '__main__':
