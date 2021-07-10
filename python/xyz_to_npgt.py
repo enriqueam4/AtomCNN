@@ -90,7 +90,7 @@ def main():
 def find_nearest(array, value):
     array = np.asarray(array)
     return (np.abs(array - value)).argmin()
-
+ 
 
 def pixel_to_angstrom(value):
     const = .0510           # Measured constant for pixels to angstroms in this image
