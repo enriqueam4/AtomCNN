@@ -11,4 +11,4 @@ This work would not have been possible without the code written before me. In pa
 (https://github.com/JJPPeters/clTEM) and Adam Dyson (https://github.com/ADyson/clTEM) 
 for designing CLTEM. Additionally, I'd like to thank Maxim Ziatdinov (https://github.com/ziatdinovmax) 
 for his implementation of AtomAI which got this whole project off the ground. Lastly, I'd like to thank the hard work of my 
-Linux-loving undergraduate Anas Ashraf of CCNY for his many hours poured into this project, and convincing me and my advisor that neural nets are the best way to analyze TEM images. 
+Linux-loving undergraduate Anas Ashraf of CCNY for his many hours poured into this project, and convincing my advisor and me that neural nets are the best way to analyze TEM images. 
