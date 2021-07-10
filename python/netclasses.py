@@ -304,7 +304,7 @@ class generate_batches_from_im:
             self.f = None
 
 
-def train(epochs, hf_file, batch_size, model, optimizer, criterion=nn.BCELoss()):
+def train(epochs, hf_file, batch_size, model, optimizer, model_directory,criterion=nn.BCELoss()):
     train_losses, test_losses = [], []
     gen = generate_batches(hf_file, batch_size)
     steps = gen.steps()
@@ -362,11 +362,11 @@ def train(epochs, hf_file, batch_size, model, optimizer, criterion=nn.BCELoss())
         # save model weights if validation loss has decreased
         if e > 0 and test_losses[e] < min(test_losses[:e]):
             print("Saving checkpoint weights...")
-            torch.save(model.state_dict(), hf_file.split('.')[0] + '-1-best_weights.pt')
+            torch.save(model.state_dict(), model_directory.split('.')[0] + '-1-best_weights.pt')
         if e == epochs - 1:
             print('\nFinished model training')
     # save the final weights
-    torch.save(model.state_dict(), hf_file.split('.')[0] + '-1-final_weights.pt')
+    torch.save(model.state_dict(), model_directory.split('.')[0] + '-1-final_weights.pt')
     gen.close_()
 
 # Live, Laugh, Love

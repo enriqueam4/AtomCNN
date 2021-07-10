@@ -16,7 +16,8 @@ def main():
         return
 
     hf_file = sys.argv[1]
-    epochs = int(sys.argv[2])
+    model_directory = sys.argv[2]
+    epochs = int(sys.argv[3])
 
     batch_size = 30
     gen = netclasses.generate_batches(hf_file, batch_size)
@@ -26,7 +27,7 @@ def main():
     model = netclasses.atomsegnet()
     model.cuda()
     optimizer = optim.Adam(model.parameters(), lr=5e-4)
-    netclasses.train(epochs=epochs, hf_file=hf_file, model=model, optimizer=optimizer, batch_size=batch_size)
+    netclasses.train(epochs=epochs, hf_file=hf_file, model=model, optimizer=optimizer, batch_size=batch_size, model_directory=model_directory)
 
 
 if __name__ == '__main__':
