@@ -13,13 +13,19 @@ set h5_file=%h5_directory%\fred.h5
 
 echo %h5_file% >> log.log
 
+set model_directory=%cd%\models
+if exist %model_directory% ( echo %model_directory% exists, removing and recreating >> log.log && rmdir %model_directory%) 
+mkdir %model_directory% 
+echo %model_directory% created >> log.log
+
+set model_file=%model_directory%\test1.pt
 
 set config_directory=%cd%\configs
 if exist %config_directory% ( echo %config_directory% exists, removing and recreating >> log.log && rmdir %config_directory%) 
 mkdir %config_directory% 
 echo %config_directory% created >> log.log
 
-python %cd%/python/generateConfigFiles.py %config_directory%/ 2
+python %cd%/python/generateConfigFiles.py %config_directory%/ 1000
 
 set cltem="C:\Program Files\clTEM\cltem_cmd.exe"
 if exist %cltem% ( echo %cltem% exists >> log.log) else ( echo file %cltem% does not exist, exiting >> log.log && exit \b 0)
@@ -51,7 +57,7 @@ for %%f in (%config_directory%\*) do (
 	echo !count!)
 	echo Config Files Loaded >> log.log
 	python %cd%\python\h5stuffer.py %output_directory% %gt_im% %h5_file% || pause
-	python %cd%\python\Local_Train.py %h5_file% 300 || pause
+	python %cd%\python\Local_Train.py %h5_file% %model_file% 300 || pause
 
 endlocal
 
