@@ -7,6 +7,7 @@ from tkinter import *
 import imutils
 from random import randint
 from skimage import exposure
+import json
 
 
 def main():
@@ -21,6 +22,8 @@ def main():
     X_Train = []
     Y_Test = []
     Y_Train = []
+    Z_Test = []
+    Z_Train = []
     test_batches = 340
     train_batches = 928
     image_size = 256
@@ -30,6 +33,10 @@ def main():
             k = np.random.randint(0, n_files - 1)
         else:
             k = 0
+
+        json_path = directory + "\\" + files[k] + "\\Image.json"
+        dictionary = json_to_dict(json_path)
+
         image_path = directory + "\\" + files[k] + "\\Image.tif"
         img = load_image(image_path)
         p0, p100 = np.percentile(img, (0, 100))
@@ -38,6 +45,7 @@ def main():
         cropped, gt_crop = prep_pair(img, gt, image_size)
         X_Test.append(cropped)
         Y_Test.append(gt_crop)
+        Z_Test.append(dictionary)
 
     for j in range(train_batches):
         print(str(j) + " of " + str(train_batches))
@@ -46,6 +54,9 @@ def main():
         else:
             k = 0
 
+        json_path = directory + "\\" + files[k] + "\\Image.json"
+        dictionary = json_to_dict(json_path)
+
         image_path = directory + "\\" + files[k] + "\\Image.tif"
         img = load_image(image_path)
         p0, p100 = np.percentile(img, (0, 100))
@@ -53,12 +64,17 @@ def main():
         cropped, gt_crop = prep_pair(img, gt, image_size)
         X_Train.append(cropped)
         Y_Train.append(gt_crop)
+        Z_Test.append(dictionary)
 
+    Z_Train = [n.encode("ascii", "ignore") for n in Z_Train]
+    Z_Test = [n.encode("ascii", "ignore") for n in Z_Test]
     hf = h5py.File(save_path, 'w')
     hf.create_dataset('X_train', data=np.expand_dims(np.asarray(X_Train), axis=1))
     hf.create_dataset('X_test', data=np.expand_dims(np.asarray(X_Test), axis=1))
     hf.create_dataset('y_test', data=np.expand_dims(np.asarray(Y_Test), axis=1))
     hf.create_dataset('y_train', data=np.expand_dims(np.asarray(Y_Train), axis=1))
+    hf.create_dataset('Z_train', data=np.asarray(Z_Train))
+    hf.create_dataset('Z_test', data=np.asarray(Z_Test))
     hf.close()
 
 
@@ -68,6 +84,14 @@ def rand_crop(image, gt, scale):
         image = cv2.resize(image, (int(image.shape[1] * rand_scale), int(image.shape[0] * rand_scale)))
         gt = cv2.resize(gt, (int(gt.shape[1] * rand_scale), int(gt.shape[0] * rand_scale)))
     return image, gt
+
+
+def json_to_dict(file):
+    f = open(file, )
+    data = json.load(f)
+    stringy = json.dumps(data)
+    stringy = str(stringy)
+    return stringy
 
 
 def rand_rotate(image, gt):
