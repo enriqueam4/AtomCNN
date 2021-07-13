@@ -11,11 +11,18 @@ def main():
     for i in range(0, int(num_files)):
         file_name = "config" + str(i).zfill(z_len)
         save_path = save_directory + file_name
-        write_json(save_path)
+        c10 = random.randint(-20, 20)
+        c30 = random.randint(-20, 20)
+        c50 = random.randint(1000, 5000)
+        c12 = random.randint(0, 0)
+        tilt = 0
+        angle = 0
+        angle1 = 0
+        resolution = 1024
+        write_json(save_path, c10, c30, c50, c12, tilt, angle, angle1, resolution)
 
 
-def write_json(json_file, c10=random.randint(-20, 20), c30=random.randint(-20, 20), c50=random.randint(1000, 5000),
-               c12=random.randint(0, 0), tilt=0, angle=0, angle1=0, resolution=1024):
+def write_json(json_file, c10, c30, c50, c12, tilt, angle, angle1, resolution):
     file = open(json_file + ".json", "w", encoding='utf-8')
     file.write('{\n')
     file.write('"cbed": {\n')
@@ -262,5 +269,8 @@ def write_json(json_file, c10=random.randint(-20, 20), c30=random.randint(-20, 2
     file.write('}\n')
     file.close()
 
+
 if __name__ == "__main__":
     main()
+
+# Enrique Mejia
