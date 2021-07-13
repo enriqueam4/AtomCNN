@@ -43,6 +43,7 @@ def main():
         img = exposure.rescale_intensity(img, in_range=(p0, p100))      # Adjusting Exposure of image
 
         cropped, gt_crop = prep_pair(img, gt, image_size)
+
         X_Test.append(cropped)
         Y_Test.append(gt_crop)
         Z_Test.append(dictionary)
@@ -62,9 +63,10 @@ def main():
         p0, p100 = np.percentile(img, (0, 100))
         img = exposure.rescale_intensity(img, in_range=(p0, p100))      # Adjusting Exposure of image
         cropped, gt_crop = prep_pair(img, gt, image_size)
+
         X_Train.append(cropped)
         Y_Train.append(gt_crop)
-        Z_Test.append(dictionary)
+        Z_Train.append(dictionary)
 
     Z_Train = [n.encode("ascii", "ignore") for n in Z_Train]
     Z_Test = [n.encode("ascii", "ignore") for n in Z_Test]
