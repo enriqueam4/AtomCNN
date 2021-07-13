@@ -3,9 +3,10 @@ import jsonpickle
 import torch
 import h5py
 import netclasses
-
+import torch.nn as nn
 
 def main():
+    criterion = nn.BCELoss()
     h5_filename = r""
     weights_filename = r""
     h5 = h5py.File(h5_filename)
@@ -22,7 +23,7 @@ def main():
         image_tensor[0, 0, :, :] = image
         prediction = np.asarray(model.forward(image_tensor))
         ground_truth = np.asarray(h5["y_train"][i])
-        correctness = np.sum(abs(prediction - ground_truth))
+        loss = criterion(prediction, ground_truth)
         score.append(correctness)
         metadata = jsonpickle.decode(h5["Z_train"][i])
         defocus.append(metadata[])
