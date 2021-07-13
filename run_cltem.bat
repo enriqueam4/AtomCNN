@@ -4,12 +4,14 @@ echo %TIME% %DATE% > log.log
 
 echo Current Directory: %cd% >> log.log
 
+set project_name="json_test"
+
 set h5_directory=%cd%\h5_files
 if exist %h5_directory% ( echo %h5_directory% exists, removing and recreating >> log.log && rmdir %h5_directory%) 
 mkdir %h5_directory% 
 echo %h5_directory% created >> log.log
 
-set h5_file=%h5_directory%\fred.h5
+set h5_file=%h5_directory%\%project_name%.h5
 
 echo %h5_file% >> log.log
 
@@ -18,7 +20,7 @@ if exist %model_directory% ( echo %model_directory% exists, removing and recreat
 mkdir %model_directory% 
 echo %model_directory% created >> log.log
 
-set model_file=%model_directory%\test1.pt
+set model_file=%model_directory%\%project_name%.pt
 
 set config_directory=%cd%\configs
 if exist %config_directory% ( echo %config_directory% exists, removing and recreating >> log.log && rmdir %config_directory%) 
@@ -35,10 +37,10 @@ if exist %output_directory% ( echo %output_directory% exists, removing and recre
 mkdir %output_directory% 
 echo %output_directory% created >> log.log
 
-set xyz_file=%cd%\structures\50x50x1_V_B_and_C_N_5_each_draft2.xyz
+set xyz_file="%cd%\structures\2h1T WS2\2h1t_CLSTEM.xyz"
 if exist %xyz_file% (echo %xyz_file% exists >> log.log ) else ( echo file %xyz_file% does not exist, exiting >> log.log && exit \b 0)
 
-set gt_im=%cd%\structures\gt.tif
+set gt_im="%cd%\structures\2h1T WS2\ws2_gt.tif"
 if exist %gt_im% (echo %gt_im% exists >> log.log ) else ( echo file %gt_im% does not exist, exiting >> log.log && exit \b 0)
 
 
@@ -53,11 +55,14 @@ for %%f in (%config_directory%\*) do (
 	del %output_directory%\!count!\"EW_Amplitude.json"
 	del %output_directory%\!count!\"EW_Phase.tif"
 	del %output_directory%\!count!\"EW_Phase.json"
+	del %output_directory%\!count!\"Image.json"
+	move %%f %output_directory%\!count!\"Image.json"
 	set /a count+=1
 	echo !count!)
-	echo Config Files Loaded >> log.log
-	python %cd%\python\h5stuffer.py %output_directory% %gt_im% %h5_file% || pause
-	python %cd%\python\Local_Train.py %h5_file% %model_file% 300 || pause
+	
+echo Config Files Loaded >> log.log
+python %cd%\python\h5stuffer.py %output_directory% %gt_im% %h5_file% || pause
+python %cd%\python\Local_Train.py %h5_file% %model_file% 300 || pause
 
 endlocal
 
