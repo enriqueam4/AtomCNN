@@ -9,7 +9,7 @@ allowedResolutions = [256,512,768,1024,1536,2048,3072,4096,8192]
 
 def main():
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hr:o:n:", ["help", "outputDirectory=","numFiles=","resolution"])   #argv[0] is simply name of the python file so we ignore it and pick up arguments from 1
+        opts, args = getopt.getopt(sys.argv[1:], "hr:o:n:", ["help", "outputDirectory=","numFiles=","resolution="])   #argv[0] is simply name of the python file so we ignore it and pick up arguments from 1
     except getopt.GetoptError as err:
         # print help information and exit:
         print(err)  # will print something like "option -a not recognized"
