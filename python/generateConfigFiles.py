@@ -1,6 +1,8 @@
+# Here we have a file which creates random parameters for microscope and saves them as json files
 import random
 import os
 import sys
+from dataclasses import dataclass
 
 
 def main():
@@ -11,18 +13,11 @@ def main():
     for i in range(0, int(num_files)):
         file_name = "config" + str(i).zfill(z_len)
         save_path = save_directory + file_name
-        c10 = random.randint(-20, 20)
-        c30 = random.randint(-20, 20)
-        c50 = random.randint(1000, 5000)
-        c12 = random.randint(0, 0)
-        tilt = 0
-        angle = 0
-        angle1 = 0
-        resolution = 1024
-        write_json(save_path, c10, c30, c50, c12, tilt, angle, angle1, resolution)
+        p = microscope_params()                     # should call a different set of random variables each time
+        write_json(save_path, p)
 
 
-def write_json(json_file, c10, c30, c50, c12, tilt, angle, angle1, resolution):
+def write_json(json_file, p):
     file = open(json_file + ".json", "w", encoding='utf-8')
     file.write('{\n')
     file.write('"cbed": {\n')
@@ -119,78 +114,98 @@ def write_json(json_file, c10, c30, c50, c12, tilt, angle, angle1, resolution):
     file.write('"C10": {\n')
     file.write('"units": "nm",\n')
     file.write('"val": ')
-    file.write(str(c10))
+    file.write(str(p.c10))
     file.write('\n')                      # mark this one -20 to 20
     file.write('},\n')
     file.write('"C12": {\n')
     file.write('"ang": ')                     # mark this one to be max 360 degrees
-    file.write(str(angle))
+    file.write(str(p.angle))
     file.write(',\n')
     file.write('"mag": ')
-    file.write(str(c12))
+    file.write(str(p.c12))
     file.write(',\n')                     # mark this one to be max 10
     file.write('"units": "nm, °"\n')
     file.write('},\n')
     file.write('"C21": {\n')
     file.write('"ang": 0.0,\n')
-    file.write('"mag": 0.0,\n')
+    file.write('"mag": ')
+    file.write(str(p.c21))
+    file.write(',\n')
     file.write('"units": "nm, °"\n')
     file.write('},\n')
     file.write('"C23": {\n')
     file.write('"ang": 0.0,\n')
-    file.write('"mag": 0.0,\n')
+    file.write('"mag": ')
+    file.write(str(p.c23))
+    file.write(',\n')
     file.write('"units": "nm, °"\n')
     file.write('},\n')
     file.write('"C30": {\n')
     file.write('"units": "μm",\n')
     file.write('"val": ')
-    file.write(str(c30))
+    file.write(str(p.c30))
     file.write('\n')                      # mark this one to be -20 to 20
     file.write('},\n')
     file.write('"C32": {\n')
     file.write('"ang": 0.0,\n')
-    file.write('"mag": 0.0,\n')
+    file.write('"mag": ')
+    file.write(str(p.c32))
+    file.write(',\n')
     file.write('"units": "μm, °"\n')
     file.write('},\n')
     file.write('"C34": {\n')
     file.write('"ang": 0.0,\n')
-    file.write('"mag": 0.0,\n')
+    file.write('"mag": ')
+    file.write(str(p.c34))
+    file.write(',\n')
     file.write('"units": "μm, °"\n')
     file.write('},\n')
     file.write('"C41": {\n')
     file.write('"ang": 0.0,\n')
-    file.write('"mag": 0.0,\n')
+    file.write('"mag": ')
+    file.write(str(p.c41))
+    file.write(',\n')
     file.write('"units": "μm, °"\n')
     file.write('},\n')
     file.write('"C43": {\n')
     file.write('"ang": 0.0,\n')
-    file.write('"mag": 0.0,\n')
+    file.write('"mag": ')
+    file.write(str(p.c43))
+    file.write(',\n')
     file.write('"units": "μm, °"\n')
     file.write('},\n')
     file.write('"C45": {\n')
     file.write('"ang": 0.0,\n')
-    file.write('"mag": 0.0,\n')
+    file.write('"mag": ')
+    file.write(str(p.c45))
+    file.write(',\n')
     file.write('"units": "μm, °"\n')
     file.write('},\n')
     file.write('"C50": {\n')
     file.write('"units": "μm",\n')
     file.write('"val": ')
-    file.write(str(c50))
+    file.write(str(p.c50))
     file.write('\n')                       # mark this to be 0 to 5000
     file.write('},\n')
     file.write('"C52": {\n')
     file.write('"ang": 0.0,\n')
-    file.write('"mag": 0.0,\n')
+    file.write('"mag": ')
+    file.write(str(p.c52))
+    file.write(',\n')
     file.write('"units": "μm, °"\n')
     file.write('},\n')
     file.write('"C54": {\n')
     file.write('"ang": 0.0,\n')
-    file.write('"mag": 0.0,\n')
+    file.write('"mag": ')
+    file.write(str(p.c54))
+    file.write(',\n')
     file.write('"units": "μm, °"\n')
     file.write('},\n')
     file.write('"C56": {\n')
     file.write('"ang": 0.0,\n')
-    file.write('"mag": 0.0,\n')
+    file.write('"mag": ')
+    file.write(str(p.c56))
+    file.write(',\n')
     file.write('"units": "μm, °"\n')
     file.write('}\n')
     file.write('},\n')
@@ -198,13 +213,13 @@ def write_json(json_file, c10, c30, c50, c12, tilt, angle, angle1, resolution):
     file.write('"azimuth": {\n')
     file.write('"units": "°",\n')
     file.write('"val": ')
-    file.write(str(angle1))
+    file.write(str(p.angle1))
     file.write('\n')                      # mark this to be up to 360
     file.write('},\n')
     file.write('"inclination": {\n')
     file.write('"units": "mrad",\n')
     file.write('"val": ')
-    file.write(str(tilt))
+    file.write(str(p.tilt))
     file.write('\n')                      # mark this one to be up to 1-3
     file.write('}\n')
     file.write('},\n')
@@ -229,7 +244,7 @@ def write_json(json_file, c10, c30, c50, c12, tilt, angle, angle1, resolution):
     file.write('},\n')
     file.write('"potentials": "kirkland",\n')
     file.write('"resolution": ')
-    file.write(str(resolution))
+    file.write(str(p.resolution))
     file.write(',\n')
     file.write('"slice offset": {\n')
     file.write('"units": "Å",\n')
@@ -268,6 +283,35 @@ def write_json(json_file, c10, c30, c50, c12, tilt, angle, angle1, resolution):
     file.write('}\n')
     file.write('}\n')
     file.close()
+
+
+@dataclass
+class microscope_params:
+    def __init__(self):
+        c10 = random.randint(-20, 20)
+        self.c10 = c10
+        c12 = random.randint(0, 5)
+        self.c12 = c12
+        c21 = random.randint(0, 50)
+        self.c21 = c21
+        c23 = random.randint(0, 100)
+        self.c23 = c23
+        c30 = random.randint(-20, 20)
+        self.c30 = c30
+        self.c32 = 0
+        self.c34 = 0
+        self.c41 = 0
+        self.c43 = 0
+        self.c45 = 0
+        c50 = random.randint(1000, 5000)
+        self.c50 = c50
+        self.c52 = 0
+        self.c54 = 0
+        self.c56 = 0
+        self.tilt = 0
+        self.angle = 0
+        self.angle1 = 0
+        self.resolution = 1024
 
 
 if __name__ == "__main__":
