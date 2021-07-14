@@ -2,20 +2,75 @@
 import random
 import os
 import sys
+import getopt
 from dataclasses import dataclass
 
+allowedResolutions = [256,512,768,1024,1536,2048,3072,4096,8192]
 
 def main():
-    save_directory = sys.argv[1]
-    print(sys.argv[1])
-    num_files = sys.argv[2]
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hr:o:n:", ["help", "outputDirectory=","numFiles=","resolution"])   #argv[0] is simply name of the python file so we ignore it and pick up arguments from 1
+    except getopt.GetoptError as err:
+        # print help information and exit:
+        print(err)  # will print something like "option -a not recognized"
+        usage()
+        sys.exit(2)
+    save_directory = ""     #directory you will be saving output to
+    num_files = ""          #the number of files you wish to generate
+    resolution = ""
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            usageHelp()
+            sys.exit()
+        elif o in ("-o", "--outputDirectory"):
+            save_directory = a
+        elif o in ("-n", "--numFiles"):
+            num_files = a
+        elif o in ("-r", "--resolution"):
+            resolution = a
+        else:
+            assert False, "unhandled option"
+
+    #Checks if num_files is blank and if so print usage and exit
+    if not num_files:
+        usage()
+        sys.exit()
+
+    #Checks if resolution was specified and if not sets default value to 1024, and checks if resolution is legal
+    if not resolution:
+        resolution= "1024"
+    elif int(resolution) not in allowedResolutions:
+        print("Input resolution is ", resolution, " but allowed resolutions are ", allowedResolutions)
+        sys.exit()
+
+
     z_len = len(str(num_files))
     for i in range(0, int(num_files)):
         file_name = "config" + str(i).zfill(z_len)
         save_path = save_directory + file_name
         p = microscope_params()                     # should call a different set of random variables each time
+        p.resolution = resolution
         write_json(save_path, p)
 
+    print("Generated", num_files, "config files in the directory", save_directory, "of resolution", p.resolution)
+
+
+
+def usage():
+    print("REQUIRED output directory path that MUST end with / (-o, --outputDirectory)")
+    print("REQUIRED number of files to generate argument (-n, --numFiles)")
+    print("OPTIONAL the resolution of the images in config file (-r, --resolution)")
+    print("Type\n\tpython generateConfigFiles.py -h\nfor extended help dialogue")
+
+def usageHelp():
+    print("Usage: python generateConfigFiles.py -o <path to output directory> -n <number of files you wish to generate>")
+    print("Example usage:\n\t python generateConfigFiles.py -o /run/media/ligma/tmp/ -n 10 -r 3072")
+    print("Example above creates 10 config files in the directory /run/media/ligma/tmp/ with resolution 3072\n")
+    print("Options:")
+    print("-h : (--help) print this help message and exit")
+    print("-o : (--outputDirectory) REQUIRED specify the output directory path you wish to save all the files to, the directory MUST already exist. Make sure path ends with /")
+    print("-n : (--numFiles) REQUIRED specify the number of config files you would like to generate")
+    print("-r : (--resolution) OPTIONAL specify the resolution you would like to have for the images. Default is 1024, options are ", allowedResolutions)
 
 def write_json(json_file, p):
     file = open(json_file + ".json", "w", encoding='utf-8')
@@ -317,4 +372,4 @@ class microscope_params:
 if __name__ == "__main__":
     main()
 
-# Enrique Mejia
+# Enrique Mejia #girlboss #hashtag #girlpower #gaslight
