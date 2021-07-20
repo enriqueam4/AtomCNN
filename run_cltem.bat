@@ -4,21 +4,15 @@ echo %TIME% %DATE% > log.log
 
 echo Current Directory: %cd% >> log.log
 
-set project_name="json_test"
+set project_name=jul19_ciftest
 
 set h5_directory=%cd%\h5_files
-if exist %h5_directory% ( echo %h5_directory% exists, removing and recreating >> log.log && rmdir %h5_directory%) 
-mkdir %h5_directory% 
-echo %h5_directory% created >> log.log
 
 set h5_file=%h5_directory%\%project_name%.h5
 
 echo %h5_file% >> log.log
 
 set model_directory=%cd%\models
-if exist %model_directory% ( echo %model_directory% exists, removing and recreating >> log.log && rmdir %model_directory%) 
-mkdir %model_directory% 
-echo %model_directory% created >> log.log
 
 set model_file=%model_directory%\%project_name%.pt
 
@@ -37,18 +31,20 @@ if exist %output_directory% ( echo %output_directory% exists, removing and recre
 mkdir %output_directory% 
 echo %output_directory% created >> log.log
 
-set xyz_file="%cd%\structures\2h1T WS2\2h1t_CLSTEM.xyz"
+set xyz_file="%cd%\structures\hBN extracarbon cif\CbVn_VbCn_large.cif"
 if exist %xyz_file% (echo %xyz_file% exists >> log.log ) else ( echo file %xyz_file% does not exist, exiting >> log.log && exit \b 0)
 
-set gt_im="%cd%\structures\2h1T WS2\ws2_gt.tif"
-if exist %gt_im% (echo %gt_im% exists >> log.log ) else ( echo file %gt_im% does not exist, exiting >> log.log && exit \b 0)
+for /F "delims=" %%i in ("%xyz_file%") do ( set extension=%%~xi && echo fileextension=!extension! >> log.log )
 
+set gt_im="%cd%\structures\hBN extracarbon cif\gt.tif"
+if exist %gt_im% (echo %gt_im% exists >> log.log ) else ( echo file %gt_im% does not exist, exiting >> log.log && exit \b 0)
 
 set count=0
 for %%f in (%config_directory%\*) do (
 	if exist %output_directory%\!count! (rmdir %output_directory%\!count!)
 	mkdir %output_directory%\!count!
-	%cltem% %xyz_file% -o %output_directory%\!count! -c %%f -d all
+	if %extension%==.xyz (%cltem% %xyz_file% -o %output_directory%\!count! -c %%f -d all)
+	if %extension%==.cif (%cltem% %xyz_file% -s "100,100,100" -z "0,0,1" -o %output_directory%\!count! -c %%f -d all) 
 	del %output_directory%\!count!\"Diff.tif"
 	del %output_directory%\!count!\"Diff.json"
 	del %output_directory%\!count!\"EW_Amplitude.tif"
