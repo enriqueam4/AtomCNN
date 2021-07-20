@@ -1,6 +1,6 @@
 # AtomCNN
 This software is intended to create a neural network model for spotting atoms in TEM images.
-It is highly recommended (if not necessary) that your computer has a NVIDIA GPU, as all of the code runs off of either OpenCL or Torch.
+It is highly recommended (if not necessary) that your computer has a GPU, as all of the code runs off of either OpenCL or Torch.
 It requires an input structure as an input and outputs a .pt file with training weights.
 
 To run this program, enter an administrative command window and call run_cltem.bat. 
