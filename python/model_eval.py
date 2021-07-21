@@ -1,10 +1,13 @@
+import cv2
 import numpy as np
 import jsonpickle
 import torch
 import h5py
 import netclasses
 import torch.nn as nn
-
+import matplotlib.pyplot as plt
+import sys
+import os
 
 def main():
     try:
@@ -17,8 +20,9 @@ def main():
         return
 
     criterion = nn.BCELoss()
-    h5_filename = r"C:\Users\emejia\Desktop\AtomCNN\h5_files\Zdump.h5"
-    weights_filename = r"C:\Users\emejia\Desktop\AtomCNN\models\test1-1-best_weights.pt"
+    h5_filename = sys.argv[1]
+    weights_filename = sys.argv[2]
+    model_directory = sys.argv[3]
     h5 = h5py.File(h5_filename)
     print(list(h5.keys()))
     checkpoint = torch.load(weights_filename, map_location='cpu')
@@ -28,15 +32,13 @@ def main():
     score = []
     metarray = []
     print(list(h5.keys()))
-    n_train = len(h5["X_train"])
-    n_train = 100
-
+    n_train = len(h5["X_test"])
     for i in range(n_train):
-        image = np.expand_dims(h5["X_train"][i], axis=0)
+        image = np.expand_dims(h5["X_test"][i], axis=0)
         image_tensor = torch.from_numpy(image).float()
         forward = model.forward(image_tensor)
         prediction = forward.cpu().detach().numpy()[0, 0, :, :]
-        ground_truth = np.asarray(h5["y_train"][i])[0, :, :]
+        ground_truth = np.asarray(h5["y_test"][i])[0, :, :]
         gt_tensor = torch.from_numpy(image).float()
         loss = criterion(forward, gt_tensor)
         loss = loss.item()
@@ -46,10 +48,58 @@ def main():
         metadata = jsonpickle.decode(h5["Z_test"][i])
         metarray.append(metadata)
 
-    for i in range(len(metarray)):
-        defocus = metarray[i]
+    defocus = []
+    a1 = []
+    a2 = []
+    b2 = []
+    cs = []
 
-    plt.plot(np.asarray(score), np.asarray)
+    for i in range(len(metarray)):
+        defocus.append(float(metarray[i]["microscope"]["aberrations"]["C10"]["val"]))
+        a1.append(float(metarray[i]["microscope"]["aberrations"]["C12"]["mag"]))
+        b2.append(float(metarray[i]["microscope"]["aberrations"]["C21"]["mag"]))
+        a2.append(float(metarray[i]["microscope"]["aberrations"]["C23"]["mag"]))
+        cs.append(float(metarray[i]["microscope"]["aberrations"]["C30"]["val"]))
+
+    defocus = np.asarray(defocus)
+    np.save(os.path.join(model_directory, "defocus.npy"), defocus)
+    a1 = np.asarray(a1)
+    np.save(os.path.join(model_directory, "a1.npy"), a1)
+    a2 = np.asarray(a2)
+    np.save(os.path.join(model_directory, "a2.npy"), a2)
+    b2 = np.asarray(b2)
+    np.save(os.path.join(model_directory, "b2.npy"), b2)
+    cs = np.asarray(cs)
+    np.save(os.path.join(model_directory, "cs.npy"), cs)
+    score = np.asarray(score)
+    np.save(os.path.join(model_directory, "score.npy"), score)
+
+    fig, (ax1, ax2, ax3, ax4, ax5) = plt.subplots(1, 5)
+
+    ax1.scatter(defocus, score)
+    ax1.set_title('Defocus vs Loss')
+    # ax1.xlabel('Defocus [nm]')
+
+    ax2.scatter(a1, score)
+    ax2.set_title('A1 vs Loss')
+    # ax2.xlabel('A1 [nm]')
+
+    ax3.scatter(a2, score)
+    ax3.set_title('A2 vs Loss')
+    # ax3.xlabel('A2 [nm]')
+
+    ax4.scatter(b2, score)
+    ax4.set_title('B2 vs Loss')
+    # ax4.xlabel('B2 [nm]')
+
+    ax5.scatter(cs, score)
+    ax5.set_title('Cs vs Loss')
+    # ax5.xlabel('Cs [nm]')
+
+    # plt.show()
+    fig.set_size_inches(20, 5)
+    fig.savefig(os.path.join(model_directory, "model_performance.png"))
+
 
 
 if __name__ == "__main__":
