@@ -4,7 +4,7 @@ echo %TIME% %DATE% > log.log
 
 echo Current Directory: %cd% >> log.log
 
-set project_name=jul21_test2
+set project_name=jul21_test3
 
 set structure_file="%cd%\structures\hBN extracarbon cif\CbVn_VbCn_large.cif"
 if exist %structure_file% (echo %structure_file% exists >> log.log ) else ( echo file %structure_file% does not exist, exiting >> log.log && exit \b 0)
@@ -66,7 +66,7 @@ echo Config Files Loaded >> log.log
 echo h5stuffer.py running >> log.log
 python %cd%\python\h5stuffer.py %output_directory% %gt_im% %h5_file% || pause
 echo h5stuffer.py complete >> log.log
-python %cd%\python\Local_Train.py %h5_file% %model_file% 10 || pause
+python %cd%\python\Local_Train.py %h5_file% %model_directory%\%project_name% 3 || pause
 echo Local_Train.py complete >> log.log
 echo modeleval.py started >> log.log
 python %cd%\python\model_eval.py %h5_file% %model_directory%\%project_name%-1-best_weights.pt %model_directory%
