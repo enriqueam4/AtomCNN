@@ -4,15 +4,26 @@ echo %TIME% %DATE% > log.log
 
 echo Current Directory: %cd% >> log.log
 
-set project_name=jul19_ciftest
+set project_name=jul21_test2
+
+set structure_file="%cd%\structures\hBN extracarbon cif\CbVn_VbCn_large.cif"
+if exist %structure_file% (echo %structure_file% exists >> log.log ) else ( echo file %structure_file% does not exist, exiting >> log.log && exit \b 0)
+
+set gt_im="%cd%\structures\hBN extracarbon cif\gt.tif"
+if exist %gt_im% (echo %gt_im% exists >> log.log ) else ( echo file %gt_im% does not exist, exiting >> log.log && exit \b 0)
 
 set h5_directory=%cd%\h5_files
+if not exist %h5_directory% ( echo %h5_directory% created >> log.log && mkdir %h5_directory% ) 
+echo %h5_directory% exists >> log.log
 
 set h5_file=%h5_directory%\%project_name%.h5
 
 echo %h5_file% >> log.log
 
-set model_directory=%cd%\models
+set model_directory=%cd%\models\%project_name%
+if exist %model_directory% ( echo %model_directory% exists, change project_name to unique name >> log.log && exit \b 0) 
+mkdir %model_directory% 
+echo %model_directory% created >> log.log
 
 set model_file=%model_directory%\%project_name%.pt
 
@@ -21,7 +32,7 @@ if exist %config_directory% ( echo %config_directory% exists, removing and recre
 mkdir %config_directory% 
 echo %config_directory% created >> log.log
 
-python %cd%/python/generateConfigFiles.py %config_directory%/ 1000
+python %cd%/python/generateConfigFiles.py %config_directory%/ 10
 
 set cltem="C:\Program Files\clTEM\cltem_cmd.exe"
 if exist %cltem% ( echo %cltem% exists >> log.log) else ( echo file %cltem% does not exist, exiting >> log.log && exit \b 0)
@@ -31,20 +42,15 @@ if exist %output_directory% ( echo %output_directory% exists, removing and recre
 mkdir %output_directory% 
 echo %output_directory% created >> log.log
 
-set xyz_file="%cd%\structures\hBN extracarbon cif\CbVn_VbCn_large.cif"
-if exist %xyz_file% (echo %xyz_file% exists >> log.log ) else ( echo file %xyz_file% does not exist, exiting >> log.log && exit \b 0)
 
-for /F "delims=" %%i in ("%xyz_file%") do ( set extension=%%~xi && echo fileextension=!extension! >> log.log )
-
-set gt_im="%cd%\structures\hBN extracarbon cif\gt.tif"
-if exist %gt_im% (echo %gt_im% exists >> log.log ) else ( echo file %gt_im% does not exist, exiting >> log.log && exit \b 0)
+for /F "delims=" %%i in ("%structure_file%") do ( set extension=%%~xi && echo fileextension=!extension! >> log.log )
 
 set count=0
 for %%f in (%config_directory%\*) do (
 	if exist %output_directory%\!count! (rmdir %output_directory%\!count!)
 	mkdir %output_directory%\!count!
-	if %extension%==.xyz (%cltem% %xyz_file% -o %output_directory%\!count! -c %%f -d all)
-	if %extension%==.cif (%cltem% %xyz_file% -s "100,100,100" -z "0,0,1" -o %output_directory%\!count! -c %%f -d all) 
+	if %extension%==.xyz (%cltem% %structure_file% -o %output_directory%\!count! -c %%f -d all)
+	if %extension%==.cif (%cltem% %structure_file% -s "100,100,100" -z "0,0,1" -o %output_directory%\!count! -c %%f -d all) 
 	del %output_directory%\!count!\"Diff.tif"
 	del %output_directory%\!count!\"Diff.json"
 	del %output_directory%\!count!\"EW_Amplitude.tif"
@@ -57,8 +63,13 @@ for %%f in (%config_directory%\*) do (
 	echo !count!)
 	
 echo Config Files Loaded >> log.log
+echo h5stuffer.py running >> log.log
 python %cd%\python\h5stuffer.py %output_directory% %gt_im% %h5_file% || pause
-python %cd%\python\Local_Train.py %h5_file% %model_file% 300 || pause
+echo h5stuffer.py complete >> log.log
+python %cd%\python\Local_Train.py %h5_file% %model_file% 10 || pause
+echo Local_Train.py complete >> log.log
+echo modeleval.py started >> log.log
+python %cd%\python\model_eval.py %h5_file% %model_directory%\%project_name%-1-best_weights.pt %model_directory%
 
 endlocal
 
