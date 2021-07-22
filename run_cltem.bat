@@ -32,7 +32,7 @@ if exist %config_directory% ( echo %config_directory% exists, removing and recre
 mkdir %config_directory% 
 echo %config_directory% created >> log.log
 
-python %cd%/python/generateConfigFiles.py %config_directory%/ 10
+python %cd%/python/generateConfigFiles.py %config_directory%/ 1000
 
 set cltem="C:\Program Files\clTEM\cltem_cmd.exe"
 if exist %cltem% ( echo %cltem% exists >> log.log) else ( echo file %cltem% does not exist, exiting >> log.log && exit \b 0)
@@ -66,7 +66,7 @@ echo Config Files Loaded >> log.log
 echo h5stuffer.py running >> log.log
 python %cd%\python\h5stuffer.py %output_directory% %gt_im% %h5_file% || pause
 echo h5stuffer.py complete >> log.log
-python %cd%\python\Local_Train.py %h5_file% %model_directory%\%project_name% 3 || pause
+python %cd%\python\Local_Train.py %h5_file% %model_directory%\%project_name% 500 || pause
 echo Local_Train.py complete >> log.log
 echo modeleval.py started >> log.log
 python %cd%\python\model_eval.py %h5_file% %model_directory%\%project_name%-1-best_weights.pt %model_directory%
