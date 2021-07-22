@@ -8,6 +8,8 @@ import torch.nn as nn
 import matplotlib.pyplot as plt
 import sys
 import os
+from statistics import median
+
 
 def main():
     try:
@@ -100,6 +102,33 @@ def main():
     fig.set_size_inches(20, 5)
     fig.savefig(os.path.join(model_directory, "model_performance.png"))
 
+    #
+    # Finding images with best, worst, and median loss
+    min_idx = np.where(score == min(score))[0][0]
+    max_idx = np.where(score == max(score))[0][0]
+    if len(score) % 2 == 1:
+        med_idx = np.where(score == median(score))[0][0]
+    else:
+        med_idx = np.where(score == median(score[1:]))[0][0]
+
+    fig2, axs = plt.subplots(3, 3)
+    fig2.set_size_inches(10, 15)
+    axs[0, 0].set_title('Minimum Loss')
+    axs[0, 1].set_title('Median Loss')
+    axs[0, 2].set_title('Maximum Loss')
+    axs[0, 0].set(ylabel="Image")
+    axs[1, 0].set(ylabel="Ground Truth")
+    axs[2, 0].set(ylabel="Prediction")
+    axs[0, 0].imshow(h5["X_test"][min_idx][0, :, :])
+    axs[1, 0].imshow(h5["y_test"][min_idx][0, :, :])
+    axs[2, 0].imshow(model.forward(torch.from_numpy(np.expand_dims(h5["X_test"][min_idx], axis=0)).float()).cpu().detach().numpy()[0, 0, :, :])
+    axs[0, 1].imshow(h5["X_test"][med_idx][0, :, :])
+    axs[1, 1].imshow(h5["y_test"][med_idx][0, :, :])
+    axs[2, 1].imshow(model.forward(torch.from_numpy(np.expand_dims(h5["X_test"][med_idx], axis=0)).float()).cpu().detach().numpy()[0, 0, :, :])
+    axs[0, 2].imshow(h5["X_test"][max_idx][0, :, :])
+    axs[1, 2].imshow(h5["y_test"][max_idx][0, :, :])
+    axs[2, 2].imshow(model.forward(torch.from_numpy(np.expand_dims(h5["X_test"][max_idx], axis=0)).float()).cpu().detach().numpy()[0, 0, :, :])
+    fig.savefig(os.path.join(model_directory, "Predictions.png"))
 
 
 if __name__ == "__main__":
