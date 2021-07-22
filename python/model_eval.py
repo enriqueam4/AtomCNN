@@ -128,7 +128,7 @@ def main():
     axs[0, 2].imshow(h5["X_test"][max_idx][0, :, :])
     axs[1, 2].imshow(h5["y_test"][max_idx][0, :, :])
     axs[2, 2].imshow(model.forward(torch.from_numpy(np.expand_dims(h5["X_test"][max_idx], axis=0)).float()).cpu().detach().numpy()[0, 0, :, :])
-    fig.savefig(os.path.join(model_directory, "Predictions.png"))
+    fig2.savefig(os.path.join(model_directory, "Predictions.png"))
 
 
 if __name__ == "__main__":
